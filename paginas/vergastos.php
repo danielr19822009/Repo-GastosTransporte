@@ -3,16 +3,16 @@ require_once("conexion/conexion.php");
 
 // Fetch gastos
 $sqlgastos = mysqli_query($conectarbd, "
-    SELECT gastos.OrigenGasto,
-           gastos.DestinoGasto,
-           gastos.ValorGasto,
-           gastos.FechaGasto,
-           usuarios.NombreUsuario,
-           usuarios.id,
-           gastos.Descripcion
-    FROM gastos 
-    INNER JOIN usuarios ON gastos.id = usuarios.id
-") or die(mysqli_error($conectarbd));
+    SELECT gastos_transporte.origen,
+           gastos_transporte.destino,
+           gastos_transporte.valor,
+           gastos_transporte.fecha,
+           usuarios.nomb_usuario,
+           usuarios.doc_usuario,
+           usuarios.cod_usuario,
+           gastos_transporte.descripcion
+    FROM gastos_transporte 
+    INNER JOIN usuarios ON gastos_transporte.cod_usuario = usuarios.cod_usuario") or die(mysqli_error($conectarbd));
 
 // Fetch users
 $sqluser = mysqli_query($conectarbd, "SELECT * FROM usuarios") or die(mysqli_error($conectarbd));
@@ -68,10 +68,10 @@ $sqluser = mysqli_query($conectarbd, "SELECT * FROM usuarios") or die(mysqli_err
             <div class="col-sm-3">
                 <label>Gestor</label>
                 <select class="form-control" name="txt_gestor" style="width:70%" required>
-                    <option value="" required></option>
+                    <option value="" disabled selected>Seleccione un gestor</option>
                     <?php
                     while ($vect1 = mysqli_fetch_array($sqluser)) {
-                        echo "<option value='" . htmlspecialchars($vect1['DocumentoUsuario']) . "'>" . htmlspecialchars($vect1['DocumentoUsuario']) . "</option>";
+                        echo "<option value='" . htmlspecialchars($vect1['doc_usuario']) . "'>" . htmlspecialchars($vect1['doc_usuario']) . "</option>";
                     }
                     ?>
                 </select>
@@ -88,16 +88,28 @@ $sqluser = mysqli_query($conectarbd, "SELECT * FROM usuarios") or die(mysqli_err
 
     <!-- Filter Variables -->
     <?php
-    @$gestor = $_POST['txt_gestor'];
-    @$fechini = $_POST['txt_fechini'];
-    @$fechafin = $_POST['txt_fechfin'];
+    // Obtener los valores de POST de manera segura
+    $gestor = isset($_POST['txt_gestor']) ? $_POST['txt_gestor'] : null;
+    $fechini = isset($_POST['txt_fechini']) ? $_POST['txt_fechini'] : null; 
+    $fechafin = isset($_POST['txt_fechfin']) ? $_POST['txt_fechfin'] : null; 
 
-    $sqlfiltro = mysqli_query($conectarbd, "
-        SELECT DocumentoUsuario, SUM(ValorGasto) AS Total 
-        FROM gastos 
-        WHERE DocumentoUsuario = '$gestor' 
-        AND FechaGasto BETWEEN '$fechini' AND '$fechafin'
-    ") or die(mysqli_error($conectarbd));
+    // Solo ejecutar la consulta si se han proporcionado los datos
+    if ($gestor && $fechini && $fechafin) {
+        $sqlfiltro = $conectarbd->prepare("
+            SELECT doc_usuario, SUM(valor) AS Total 
+            FROM gastos_transporte 
+            WHERE doc_usuario = ? 
+            AND fecha BETWEEN ? AND ?
+            GROUP BY doc_usuario
+        ");
+
+        // Ejecutar la consulta con parámetros
+        $sqlfiltro->bind_param("sss", $gestor, $fechini, $fechafin); // Usar bind_param para mysqli
+        $sqlfiltro->execute();
+
+        // Obtener los resultados
+        $resultados = $sqlfiltro->get_result(); // Obtener el resultado de la consulta
+    }
     ?>
 
     <!-- Modal for Filter -->
@@ -105,11 +117,11 @@ $sqluser = mysqli_query($conectarbd, "SELECT * FROM usuarios") or die(mysqli_err
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">X</button>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title">Registro Gastos</h4>
                 </div>
                 <div class="modal-body">
-                    <table>
+                    <table class="table table-bordered">
                         <thead>
                             <tr>
                                 <th style="width:100px">Gestor</th>
@@ -118,11 +130,13 @@ $sqluser = mysqli_query($conectarbd, "SELECT * FROM usuarios") or die(mysqli_err
                         </thead>
                         <tbody>
                             <?php
-                            while ($fila = mysqli_fetch_array($sqlfiltro)) {
-                                echo "<tr>";
-                                echo "<td style='text-align:center'>" . htmlspecialchars($fila["DocumentoUsuario"]) . "</td>";
-                                echo ($fila["Total"]) . "</td>";
-                                echo "</tr>";
+                            if (isset($resultados)) {
+                                while ($fila = $resultados->fetch_assoc()) { // Usar fetch_assoc() para mysqli
+                                    echo "<tr>";
+                                    echo "<td style='text-align:center'>" . htmlspecialchars($fila["doc_usuario"]) . "</td>";
+                                    echo "<td style='text-align:center'>" . htmlspecialchars($fila["Total"]) . "</td>"; 
+                                    echo "</tr>";
+                                }
                             }
                             ?>
                         </tbody>
@@ -133,32 +147,32 @@ $sqluser = mysqli_query($conectarbd, "SELECT * FROM usuarios") or die(mysqli_err
     </div>
 
     <hr style="width: 100%; color: black; height: 1px; background-color:black;" />
-		
+
     <!-- Gastos Table -->	
     <div class="container" style="margin-top:4%">
         <table id="mitable">
             <thead>
                 <tr>
-                    <th style="width:100px">Origen</th>
+                    <th>Origen</th>
                     <th>Destino</th>
                     <th>Valor</th>
-                    <th style="width:100px">Fecha</th>
-                    <th>Gestor</th>
+                    <th>Fecha</th>
                     <th>Descripcion</th>
-                    <th>Accion</th>							
+                    <th>Tecnico</th>
+                    <th>Acción</th>							
                 </tr>
             </thead>
             <tbody>
                 <?php
                 while ($row = mysqli_fetch_array($sqlgastos)) {
                     echo "<tr>";
-                    echo ($row["OrigenGasto"]) . "</td>";
-                    echo ($row["DestinoGasto"]) . "</td>";
-                    echo ($row["ValorGasto"]) . "</td>";
-                    echo ($row["FechaGasto"]) . "</td>";
-                    echo "<td style='text-align:center'>" . htmlspecialchars($row["DocumentoUsuario"]) . "</td>";
-                    echo ($row["Descripcion"]) . "</td>";
-                    echo "<td style='text-align:center'><a href='crud/crudgastos.php?guardar=modificar&txt_observaciones=" . urlencode($row["DocumentoUsuario"]) . "'>Update</a></td>";
+                    echo "<td>" . ($row["origen"]) . "</td>";
+                    echo "<td>" . ($row["destino"]) . "</td>";
+                    echo "<td>" . ($row["valor"]) . "</td>";
+                    echo "<td>" . ($row["fecha"]) . "</td>";
+                    echo "<td>" . ($row["descripcion"]) . "</td>";
+                    echo "<td>" . ($row["nomb_usuario"]) . "</td>";
+                    echo "<td><a href='update.php?cod_usuario=".$row["cod_usuario"]. "'>Update</a></td>";
                     echo "</tr>";
                 }
                 ?>
@@ -167,4 +181,6 @@ $sqluser = mysqli_query($conectarbd, "SELECT * FROM usuarios") or die(mysqli_err
         <a href="menu.php"><button type="button" class="btn btn-danger">Back</button></a>
     </div>
 </body>
+
+
 </html>

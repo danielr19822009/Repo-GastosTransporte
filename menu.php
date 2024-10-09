@@ -1,28 +1,28 @@
 <?php
 // Llamamos la conexión
-require_once("conexion/conexion.php");
+require_once("./conexion/conexion.php");
 
-// Iniciamos la sesión
+// // Iniciamos la sesión
 session_start();
 
 // Validamos que la sesión está activa y no esté vacía
 if (empty($_SESSION["usuario"])) {
-    header("location: ../index.php?msn=Debes iniciar sesión");
+    header("location: /index.php?msn=Debes iniciar sesión");
     exit();
 }
 
 // Query de consulta tabla gastos
 $sqlgastos = $conectarbd->prepare("
     SELECT 
-        gastos.OrigenGasto,
-        gastos.DestinoGasto,
-        gastos.ValorGasto,
-        gastos.FechaGasto,
-        usuarios.NombreUsuario,
-        usuarios.DocumentoUsuario,
-        gastos.Descripcion
-    FROM gastos 
-    INNER JOIN usuarios ON gastos.id_usuario = usuarios.id_usuario
+        gastos_transporte.origen,
+        gastos_transporte.destino,
+        gastos_transporte.valor,
+        gastos_transporte.fecha,
+        usuarios.nomb_usuario,
+        usuarios.doc_usuario,
+        gastos_transporte.descripcion
+    FROM gastos_transporte 
+    INNER JOIN usuarios ON gastos_transporte.cod_usuario = usuarios.cod_usuario
 ");
 
 if (!$sqlgastos->execute()) {
@@ -37,9 +37,9 @@ $gastos = $sqlgastos->get_result();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Menu Transporte</title>
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 </head>
 <body>
 
@@ -48,41 +48,38 @@ $gastos = $sqlgastos->get_result();
     <nav class="navbar navbar-inverse">
         <div class="container-fluid">
             <div class="navbar-header">
-                <a class="navbar-brand" href="menu.php">logo empresa</a><br><br>
+                <a class="navbar-brand" href="menu.php">Logo Empresa</a>
             </div>
             <div>
                 <ul class="nav navbar-nav">
                     <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="menu.php">Gastos Transporte<span class="caret"></span></a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Gastos Transporte <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="?page=agregar">Agregar Gasto</a></li>
-                            <li><a href="menu.php?page=vergasto">Ver Gastos</a></li>
-                            <li><a href="menu.php?page=modigasto">Modificar Gasto</a></li>
-                            <li><a href="menu.php?page=pruebas">pruebas Gasto</a></li>
-
+                            <li><a href="?page=vergasto">Ver Gastos</a></li>
                         </ul>
                     </li>
-                    <li class="dropdown-submenu closed">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="menu.php">Reportes<span class="caret"></span></a>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Reportes <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li class="dropdown-submenu">
-                                <a class="dropdown-toggle" data-toggle="dropdown" href="menu.php">Reporte Usuarios<span class="caret"></span></a>
-                                <ul class="dropdown">
-                                    <li><a href="menu.php?page=reporteusupdf">Pdf</a></li>
-                                    <li><a href="menu.php?page=reporteusucsv">Csv</a></li>
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Reporte Usuarios <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="?page=reporteusupdf">PDF</a></li>
+                                    <li><a href="?page=reporteusucsv">CSV</a></li>
                                 </ul>
                             </li>
-                            <li>
-                                <a href="menu.php">Reporte Gastos<span class="glyphicon glyphicon-hourglass"></span></a>
-                                <ul class="dropdown">
-                                    <li><a href="menu.php?page=reportegastpdf">Pdf</a></li>
-                                    <li><a href="menu.php?page=reportegastcsv">Csv</a></li>
+                            <li class="dropdown-submenu">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#">Reporte Gastos <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="?page=reportegastpdf">PDF</a></li>
+                                    <li><a href="?page=reportegastcsv">CSV</a></li>
                                 </ul>
                             </li>
                         </ul>
                     </li>
-                    <li><a href="#">Faq</a></li>
-                    <li><a href="menu.php?page1=client">Clientes</a></li>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="?page1=client">Clientes</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
@@ -92,9 +89,9 @@ $gastos = $sqlgastos->get_result();
                         </a>
                         <ul class="dropdown-menu">
                             <li><a href="validar/cerrarsession.php"><span class="glyphicon glyphicon-log-in"></span> Logout</a></li>
-                            <li><a href="menu.php?page=mail"><span class="glyphicon glyphicon-earphone"></span> Ayuda</a></li>
-                            <li><a href="menu.php?page=administracion"><span class="glyphicon glyphicon-cog"></span> Administracion</a></li>
-                            <li><a href="menu.php?page=reset"><span class="glyphicon glyphicon-repeat"></span> Password</a></li>
+                            <li><a href="?page=mail"><span class="glyphicon glyphicon-earphone"></span> Ayuda</a></li>
+                            <li><a href="?page=administracion"><span class="glyphicon glyphicon-cog"></span> Administración</a></li>
+                            <li><a href="?page=reset"><span class="glyphicon glyphicon-repeat"></span> Cambiar Contraseña</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -102,8 +99,6 @@ $gastos = $sqlgastos->get_result();
         </div>
     </nav><br><br>
     
-   
-
     <!-- Contenedor de hojas -->
     <div class="jumbotron">
         <?php
@@ -113,10 +108,6 @@ $gastos = $sqlgastos->get_result();
             case 'agregar':
                 require("./paginas/ingresargastos.php");
                 break;
-
-                case 'pruebas':
-                    require("./paginas/pruebas.php");
-                    break;
             case 'modigasto':
                 include_once("./paginas/buscargasto.php");
                 break;
@@ -133,7 +124,7 @@ $gastos = $sqlgastos->get_result();
                 include_once('./paginas/repgascsv.php');
                 break;
             case 'administracion':
-                include_once("/admin.php");
+                include_once("./admin.php");
                 break;
             case 'reset':
                 include_once("paginas/resetpass.php");
@@ -142,8 +133,7 @@ $gastos = $sqlgastos->get_result();
                 include_once("./paginas/mail.php");
                 break;
             default:
-			include_once("./paginas/slader.php");
-
+                include_once("./paginas/slader.php");
                 break;
         }
         ?>
@@ -154,7 +144,7 @@ $gastos = $sqlgastos->get_result();
         $pag = $_REQUEST["page1"] ?? '';
 
         if (!empty($pag)) {
-            include_once("/paginas/clientes.php");
+            include_once("./paginas/clientes.php");
         }
         ?>
     </div>

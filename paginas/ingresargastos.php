@@ -1,22 +1,7 @@
 <?php
-// Session management
-if (session_status() === PHP_SESSION_NONE) {
-	session_start();
-}
+// Llamamos la conexión
+require_once("./conexion/conexion.php");
 
-// Your existing code continues here
-@$user = $_SESSION['usuariosencillo'];
-@$user1 = $_SESSION['usuario'];
-@$user2 = $_SESSION['doc'];
-
-// Load the database connection
-require_once("conexion/conexion.php");
-
-// Check session status
-if (!isset($_SESSION['usuariosencillo'])) {
-	header("Location: login.php"); // Redirect to login page if session is invalid
-	exit();
-}
 
 // Queries
 $sqlcliente = "SELECT * FROM clientes";
@@ -27,14 +12,15 @@ $clientes = $conectarbd->query($sqlcliente);
 $usuarios = $conectarbd->query($sqluser);
 
 // Prepare data for gastos
-$sqlgastos = "SELECT gastos.OrigenGasto,
-                        gastos.DestinoGasto,
-                        gastos.ValorGasto,
-                        gastos.FechaGasto,
-                        usuarios.NombreUsuario,
-                        usuarios.DocumentoUsuario
-                  FROM gastos
-                  INNER JOIN usuarios ON gastos.id = usuarios.id";
+$sqlgastos = "SELECT gastos_transporte.origen,
+                        gastos_transporte.destino,
+                        gastos_transporte.valor,
+                        gastos_transporte.fecha,
+                        usuarios.nomb_usuario,
+                        usuarios.doc_usuario
+                  FROM gastos_transporte
+                  INNER JOIN usuarios ON gastos_transporte.cod_usuario= usuarios.cod_usuario";
+
 $gastos = $conectarbd->query($sqlgastos);
 ?>
 
@@ -64,8 +50,8 @@ $gastos = $conectarbd->query($sqlgastos);
 				<select id="txt_conductor" name="txt_conductor" class="form-control" required>
 					<option value="" disabled selected>Seleccione un conductor</option>
 					<?php while ($row = $usuarios->fetch_assoc()): ?>
-						<option value="<?php echo $row['DocumentoUsuario']; ?>">
-							<?php echo $row['NombreUsuario']; ?>
+						<option value="<?php echo $row['doc_usuario']; ?>">
+							<?php echo $row['doc_usuario']; ?>
 						</option>
 					<?php endwhile; ?>
 				</select>
@@ -75,25 +61,35 @@ $gastos = $conectarbd->query($sqlgastos);
 				<label for="txt_origen">Origen:</label>
 				<select id="txt_origen" name="txt_origen" class="form-control" required>
 					<option value="" disabled selected>Seleccione un origen</option>
-					<?php while ($row = $clientes->fetch_assoc()): ?>
+					<?php while ($row = $gastos->fetch_assoc()): ?>
 						<option>
-							<?php echo $row['NombreCliente']; ?>
+							<?php echo $row['origen']; ?>
 						</option>
 					<?php endwhile; ?>
+					
 				</select>
 			</div>
 
 			<div class="form-group">
-				<label for="txt_destino">Destino:</label>
+				<label for="txt_destino">destino:</label>
 				<select id="txt_destino" name="txt_destino" class="form-control" required>
 					<option value="" disabled selected>Seleccione un destino</option>
-					<?php while ($row = $clientes->fetch_assoc()): ?>
+					<?php while ($row = $gastos->fetch_assoc()): ?>
 						<option>
-							<?php echo $row['NombreCliente']; ?>
+							<?php echo $row['destino']; ?>
 						</option>
 					<?php endwhile; ?>
+					
 				</select>
 			</div>
+
+			<div class="form-group">
+                <label for="transporte">Transporte:</label>
+                <select class="form-control" id="txt_tipotransporte" name="txt_tipotransporte" required>
+                    <option value="moto">Moto</option>
+                    <option value="taxi">Taxi</option>
+                </select>
+            </div>
 
 			<div class="form-group">
 				<label for="txt_valor">Valor:</label>
@@ -108,6 +104,9 @@ $gastos = $conectarbd->query($sqlgastos);
 				<textarea id="txt_observaciones" name="txt_observaciones" class="form-control" rows="4" required></textarea>
 			</div>
 
+			<div class="form-group">
+				<button type="button" class="btn btn-success">Guardar</button>
+			</div>
 		
 		</form>
 	</div>

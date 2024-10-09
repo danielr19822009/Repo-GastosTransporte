@@ -17,9 +17,7 @@
 
         <!-- Card con las opciones de acción -->
         <div class="card text-center mb-4">
-            <div class="card-header">
-                Opciones
-            </div>
+            
             <div class="card-body">
                 <button type="button" class="btn btn-info btn-md" data-toggle="modal" data-target="#myModal1">
                     <span class="glyphicon glyphicon-plus"></span> Nuevo Usuario
@@ -61,6 +59,11 @@
                             <div class="form-group">
                                 <label for="txt_passw">Contraseña</label>
                                 <input id="txt_passw" name="txt_passw" type="password" class="form-control" required />
+                            </div>
+
+                            <div class="form-group">
+                                <label >Rol</label>
+                                <input id="txt_rol" name="txt_rol" type="text" class="form-control" required />
                             </div>
                             <button name="guardar" value="guser" type="submit" class="btn btn-default">Guardar</button>
                         </form>
@@ -129,7 +132,7 @@
         </div>
 
         <!-- Modal para Actualizar Cliente -->
-        <div class="modal fade" id="myModal4" role="dialog">
+        <div class="modal " id="myModal4" role="dialog">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -139,15 +142,15 @@
                     <div class="modal-body">
                         <form action="modificarusarios.php" method="POST">
                             <div class="form-group">
-                                <label for="txt_buscarpor_client">Buscar Por:</label>
+                                <label for="txt_buscarpor_client"> Por:</label>
                                 <select id="txt_buscarpor_client" name="txt_buscarpor" class="form-control" required>
-                                    <option value="nom">Nombre</option>
-                                    <option value="ape">Apellido</option>
-                                    <option value="doc">Documento</option>
+                                    <option value="nom">Nombre / Razón Social</option>
+                                    <option value="ape">Telefono</option>
+                                
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="txt_buscado_client">Valor:</label>
+                                <label for="txt_buscado_client">Dato:</label>
                                 <select id="txt_buscado_client" name="txt_buscado" class="form-control" required>
                                     <option value="" disabled selected></option>
                                     <?php
@@ -157,24 +160,16 @@
                                     ?>
                                 </select>
                             </div>
-                            <button class="btn btn-default">Buscar</button>
+
+                            <button type="" class="btn btn-default">Buscar</button>
+
                         </form>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Mostrar el mensaje de error si existe -->
-        <?php if (isset($_GET['mensaje'])): ?>
-            <script>
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: '<?php echo htmlspecialchars($_GET['mensaje']); ?>',
-                    confirmButtonText: 'OK'
-                });
-            </script>
-        <?php endif; ?>
+       
     </div>
 </body>
 </html>
