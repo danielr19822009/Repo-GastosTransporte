@@ -1,0 +1,10 @@
+
+.img-responsive {
+    margin-left: 40%;
+    margin-right: 40%;
+    border: solid 2px gray; /* Bordes */
+    border-radius: 50%; /* Hacer la imagen redonda */
+    width: 100px; /* Ajusta el ancho según sea necesario */
+    height: 100px; /* Ajusta la altura según sea necesario */
+   
+}

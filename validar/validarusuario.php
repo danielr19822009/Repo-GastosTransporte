@@ -1,7 +1,8 @@
 <?php
+require_once("../conexion/conexion.php");
+
 session_start(); // Iniciar la sesión
 
-require_once("../conexion/conexion.php");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Capturar el valor del input

@@ -3,16 +3,16 @@ require_once("conexion/conexion.php");
 
 // Fetch gastos
 $sqlgastos = mysqli_query($conectarbd, "
-    SELECT gastos_transporte.origen,
-           gastos_transporte.destino,
-           gastos_transporte.valor,
-           gastos_transporte.fecha,
+    SELECT transporte.origen,
+           transporte.destino,
+           transporte.valor,
+           transporte.fecha,
            usuarios.nomb_usuario,
            usuarios.doc_usuario,
            usuarios.cod_usuario,
-           gastos_transporte.descripcion
-    FROM gastos_transporte 
-    INNER JOIN usuarios ON gastos_transporte.cod_usuario = usuarios.cod_usuario") or die(mysqli_error($conectarbd));
+           transporte.descripcion
+    FROM transporte 
+    INNER JOIN usuarios ON transporte.cod_usuario = usuarios.cod_usuario") or die(mysqli_error($conectarbd));
 
 // Fetch users
 $sqluser = mysqli_query($conectarbd, "SELECT * FROM usuarios") or die(mysqli_error($conectarbd));

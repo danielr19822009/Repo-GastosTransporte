@@ -2,32 +2,50 @@
 // Llamamos la conexión
 require_once("./conexion/conexion.php");
 
-// // Iniciamos la sesión
+// Iniciamos la sesión
 session_start();
+$_SESSION['usuario'] = $usuario; // Nombre de usuario
+$_SESSION['rol_usuario'] = $rol; // Rol del usuario
 
-// Validamos que la sesión está activa y no esté vacía
+// Verificamos si la sesión está activa
 if (empty($_SESSION["usuario"])) {
     header("location: /index.php?msn=Debes iniciar sesión");
     exit();
 }
 
+$rolusers = $_SESSION['rol_usuario'];
+
+// Muestra el error tras ingresar datos que no existen en la bd 
+if (isset($_GET['mensaje'])): ?>
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: '<?php echo htmlspecialchars($_GET['mensaje']); ?>',
+            confirmButtonText: 'OK'
+        });
+    </script>
+<?php endif; ?>
+
+<?php
 // Query de consulta tabla gastos
 $sqlgastos = $conectarbd->prepare("
     SELECT 
-        gastos_transporte.origen,
-        gastos_transporte.destino,
-        gastos_transporte.valor,
-        gastos_transporte.fecha,
+        transporte.origen,
+        transporte.destino,
+        transporte.valor,
+        transporte.fecha,
         usuarios.nomb_usuario,
         usuarios.doc_usuario,
-        gastos_transporte.descripcion
-    FROM gastos_transporte 
-    INNER JOIN usuarios ON gastos_transporte.cod_usuario = usuarios.cod_usuario
+        transporte.descripcion
+    FROM transporte 
+    INNER JOIN usuarios ON transporte.cod_usuario = usuarios.cod_usuario
 ");
 
 if (!$sqlgastos->execute()) {
     die("Error en la consulta: " . $sqlgastos->error);
 }
+
 $gastos = $sqlgastos->get_result();
 ?>
 
@@ -106,7 +124,7 @@ $gastos = $sqlgastos->get_result();
 
         switch ($pagina) {
             case 'agregar':
-                require("./paginas/ingresargastos.php");
+                require("./paginas/addgasto.php");
                 break;
             case 'modigasto':
                 include_once("./paginas/buscargasto.php");
@@ -124,13 +142,19 @@ $gastos = $sqlgastos->get_result();
                 include_once('./paginas/repgascsv.php');
                 break;
             case 'administracion':
-                include_once("./admin.php");
+                if($rolusers === "admin") {
+                    include_once("./paginas/admin.php");
+                } else {
+                    $msn = "Usted No Tiene el Rol de Acceso";
+                    header("Location: ./paginas/menu.php?mensaje=" . urlencode($msn));
+                    exit();
+                }
                 break;
             case 'reset':
                 include_once("paginas/resetpass.php");
                 break;
             case 'mail':
-                include_once("./paginas/mail.php");
+                include_once("./paginas/admin.php");
                 break;
             default:
                 include_once("./paginas/slader.php");

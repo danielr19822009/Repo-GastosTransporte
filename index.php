@@ -7,46 +7,43 @@
     <link rel="shortcut icon" href="imagenes/logo.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../transporte/css/stilos.css">
+    <link rel="stylesheet" href="./css/styles.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
-<body>
+<body id="fondo1"> <!-- Añadido id="fondo1" -->
 
-    <div>
-        <div class="container">
-            <div class="panel panel-primary" style="margin: 3% 20% auto 20%">
-                <form role="form" action="validar/validarusuario.php" method="POST">
+    <div class="container">
+        <div class="panel panel-primary" style="margin: 3% 20% auto 20%">
+            <form role="form" action="validar/validarusuario.php" method="POST">
+                <img src="imagenes/logo.png" class="img-responsive" alt="Logo de la empresa"> <!-- Atributo alt mejorado -->
+                <div class="form-group">
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" class="form-control" id="nombre" name="nombre" required>
+                </div>
+                <br>
 
-                    <div class="form-group" style="margin: 2% 20% 0% 20%; width: 30%">
-                        <img src="imagenes/logo.png" class="img-responsive" alt="Logo">
-                        <label for="">Nombre:</label>
-                        <input type="text" class="form-control" id="nombre" name="nombre" required>
-                    </div><br>
+                <div class="form-group">
+                    <label for="contrasena">Password:</label>
+                    <input type="password" class="form-control" id="contrasena" name="contrasena" required>
+                </div>
 
-                    <div class="form-group" style="margin: 0% 20% 2% 20%; width: 30%">
-                        <label for="">Password:</label>
-                        <input type="password" class="form-control" id="contrasena" name="contrasena" required>
-                    </div>
+                <button type="submit" class="btn btn-success">Ingresar</button><br>
+            </form>
 
-                    <button type="submit" class="btn btn-success" style="margin: 0% 10% 5% 40%">Ingresar</button><br>
+            <!-- Muestra el error tras ingresar datos que no existen en la bd -->
+            <?php if (isset($_GET['mensaje'])): ?>
+                <script>
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: '<?php echo htmlspecialchars($_GET['mensaje']); ?>',
+                        confirmButtonText: 'OK'
+                    });
+                </script>
+            <?php endif; ?>
 
-                </form>
-
-                <!-- Muestra el error tras ingresar datos que no existen en la bd -->
-                <?php if (isset($_GET['mensaje'])): ?>
-                    <script>
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: '<?php echo htmlspecialchars($_GET['mensaje']); ?>',
-                            confirmButtonText: 'OK'
-                        });
-                    </script>
-                <?php endif; ?>
-
-            </div>
         </div>
     </div>
 
