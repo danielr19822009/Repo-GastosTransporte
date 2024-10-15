@@ -12,36 +12,38 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
-<body id="fondo1"> <!-- Añadido id="fondo1" -->
+<body id="fondo1">
+    <!-- Añadido id="fondo1" -->
 
     <div class="container">
         <div class="panel panel-primary" style="margin: 3% 20% auto 20%">
-            <form role="form" action="validar/validarusuario.php" method="POST">
-                <img src="imagenes/logo.png" class="img-responsive" alt="Logo de la empresa"> <!-- Atributo alt mejorado -->
+            <form role="form" action="/validar/validarusuario.php" method="POST">
+                <img src="imagenes/logo.png" class="img-responsive" alt="Logo de la empresa">
+                <!-- Atributo alt mejorado -->
                 <div class="form-group">
-                    <label for="nombre">Nombre:</label>
+                    <label >Nombre:</label>
                     <input type="text" class="form-control" id="nombre" name="nombre" required>
                 </div>
                 <br>
 
                 <div class="form-group">
-                    <label for="contrasena">Password:</label>
+                    <label >Password:</label>
                     <input type="password" class="form-control" id="contrasena" name="contrasena" required>
-                </div>
+                </div><br>
 
                 <button type="submit" class="btn btn-success">Ingresar</button><br>
             </form>
 
             <!-- Muestra el error tras ingresar datos que no existen en la bd -->
             <?php if (isset($_GET['mensaje'])): ?>
-                <script>
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: '<?php echo htmlspecialchars($_GET['mensaje']); ?>',
-                        confirmButtonText: 'OK'
-                    });
-                </script>
+            <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: '<?php echo htmlspecialchars($_GET['mensaje']); ?>',
+                confirmButtonText: 'OK'
+            });
+            </script>
             <?php endif; ?>
 
         </div>

@@ -8,3 +8,29 @@
     height: 100px; /* Ajusta la altura según sea necesario */
    
 }
+
+
+/*  estilos nav bar  */
+.navbar-nav > li > .dropdown-menu {
+    background-color: #f8f9fa; /* Color de fondo */
+    border-radius: 4px; /* Bordes redondeados */
+}
+
+.navbar-nav > li > .dropdown-menu > li > a {
+    color: #333; /* Color del texto */
+    padding: 10px 20px; /* Espaciado interno */
+}
+
+.navbar-nav > li > .dropdown-menu > li > a:hover {
+    background-color: #e2e6ea; /* Color de fondo al pasar el mouse */
+    color: #007bff; /* Color del texto al pasar el mouse */
+}
+
+.dropdown-toggle {
+    font-weight: bold; /* Negrita para el nombre del usuario */
+}
+
+.glyphicon {
+    margin-right: 5px; /* Espacio entre el icono y el texto */
+}
+
